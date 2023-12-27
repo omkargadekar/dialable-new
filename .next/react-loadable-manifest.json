@@ -4,11 +4,5 @@
     "files": [
       "static/chunks/node_modules_next_dist_pages__error_js.js"
     ]
-  },
-  "index.js -> ../src/components/Counter": {
-    "id": "index.js -> ../src/components/Counter",
-    "files": [
-      "static/chunks/src_components_Counter_js.js"
-    ]
   }
 }

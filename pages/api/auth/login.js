@@ -1,82 +1,55 @@
 import { User } from "../../../src/models/userModel";
 import express from "express";
 import cookieParser from "cookie-parser";
-
-const app = express();
-
-// Use the cookie-parser middleware
-app.use(cookieParser());
-
-const generateAccessAndRefreshTokens = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-
-    const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToken();
-
-    user.refreshToken = refreshToken;
-
-    await user.save({ validateBeforeSave: false });
-    return { accessToken, refreshToken };
-  } catch (error) {
-    console.error("Error generating access token:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import Cookies from "cookies"
 
 export default async function handler(req, res) {
-  if (req.method === "POST") {
-    const { email, password } = req.body;
+  try {
+    if (req.method === "POST") {
+      const { email, password } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ error: " email is required" });
-    }
+      const existUser = await User.findOne({ email: email });
 
-    const user = await User.findOne({ email });
+      if (!existUser) {
+        return res.status(400).json({
+          message: "User Does Not Exist!",
+        });
+      }
 
-    if (!user) {
-      return res.status(404).json({ error: "User does not exist" });
-    }
+      const passwordCompare = await bcrypt.compare(password, existUser.password);
 
-    const isPasswordValid = await user.isPasswordCorrect(password);
+      if (!passwordCompare) {
+        return res.status(400).json({
+          message: "Invalid Credentials!",
+        });
+      }
 
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid user credentials" });
-    }
-
-    try {
-      const { accessToken, refreshToken } =
-        await generateAccessAndRefreshTokens(user._id);
-
-      const loggedInUser = await User.findById(user._id).select(
-        "-password -refreshToken -emailVerificationToken -emailVerificationExpiry"
+      const token = jwt.sign(
+        {
+          id: existUser._id,
+          email: existUser.email,
+        },
+        "mysecretkey",
+        { expiresIn: "1h" }
       );
 
-      const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-      };
+      var cookies = new Cookies(req, res);
+      cookies.set("users", JSON.stringify(existUser));
 
-      console.log(res.cookie());
-
-      return res
-        .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
-        .json({
-          status: 200,
-          data: {
-            user: loggedInUser,
-            accessToken,
-            refreshToken,
-          },
-          message: "User logged in successfully",
-        });
-    } catch (error) {
-      console.error("Error logging in user:", error);
-      return res.status(500).json({ error: "Internal Server Error" });
+      return res.status(200).json({
+        data: existUser,
+        success: true,
+        token: token,
+        message: "Login Successful!",
+      });
+    } else {
+      return res.status(405).json({ message: "Method Not Allowed" });
     }
-  } else {
-    res.status(405).end(); // Method Not Allowed
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 }
