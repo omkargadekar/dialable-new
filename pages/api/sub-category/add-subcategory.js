@@ -6,7 +6,7 @@ import { SubCategory } from "../../../src/models/subCategoryModel";
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = "./uploads";
-    const subfolder = "products";
+    const subfolder = "sub-category";
 
     // Create "uploads" folder if it doesn't exist
     if (!fs.existsSync(uploadPath)) {

@@ -1,6 +1,7 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
+import { Listing } from "../../../src/models/listingModel";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -35,33 +36,25 @@ const upload = multer({ storage: storage });
 
 export default async function DELETE(req, res) {
   try {
-    const product_id = req.params.product_id;
+    const listingId = req.params.product_id;
 
-    const productData = await productModel.findOne({ _id: product_id });
+    const listingData = await productModel.findOne({ _id: listingId });
 
-    let thumbnail = productData.thumbnail;
-    if (req.files && req.files["thumbnail"]) {
-      thumbnail = req.files["thumbnail"][0].filename;
-      if (fs.existsSync("./uploads/products/" + productData.thumbnail)) {
-        fs.unlinkSync("./uploads/products/" + productData.thumbnail);
-      }
-    }
-
-    let images = productData.images;
+    let images = listingData.images;
     if (req.files && req.files["images"]) {
       req.files["images"].forEach((file) => {
         images.push(file.filename);
       });
-      if (fs.existsSync("./uploads/products/" + productData.images)) {
-        fs.unlinkSync("./uploads/products/" + productData.images);
+      if (fs.existsSync("./uploads/listing/" + listingData.images)) {
+        fs.unlinkSync("./uploads/listing/" + listingData.images);
       }
     }
 
-    const removeData = await productModel.deleteOne({ _id: product_id });
+    const removeData = await Listing.deleteOne({ _id: listingId });
     if (removeData.acknowledged) {
       return res.status(200).json({
         data: removeData,
-        message: "Product Deleted Successfully",
+        message: "Listing Deleted Successfully",
       });
     }
   } catch (error) {

@@ -1,12 +1,12 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { Category } from "../../../src/models/categoryModel";
+import { Listing } from "../../../src/models/listingModel";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = "./uploads";
-    const subfolder = "category";
+    const subfolder = "listing";
 
     // Create "uploads" folder if it doesn't exist
     if (!fs.existsSync(uploadPath)) {
@@ -34,19 +34,4 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-export default async function GET(req, res) {
-  try {
-    const categoryID = req.params.category_id;
-    const categoryData = await Category.findOne({ _id: categoryID });
-    if (categoryData) {
-      return res.status(200).json({
-        data: categoryData,
-        message: "Success",
-      });
-    }
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
-  }
-}
+export default async function DELETE(req, res) {}
