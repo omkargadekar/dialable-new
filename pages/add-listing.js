@@ -1,14 +1,70 @@
-import React from "react";
+import React, { useState } from "react";
 import PageBanner from "../src/components/PageBanner";
 import Layout from "../src/layouts/Layout";
+import Image from "next/image";
 
 const AddListing = () => {
+  const [formData, setFormData] = useState({
+    placeName: "",
+    category: "",
+    keywords: "",
+    description: "",
+    contactName: "",
+    email: "",
+    phone: "",
+    website: "",
+    designation: "",
+    company: "",
+    facebook: "",
+    twitter: "",
+    linkedIn: "",
+    skype: "",
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "/api/listing/add-listing",
+        JSON.stringify(formData),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      console.log(response?.data);
+    } catch (error) {
+      console.error("Error submitting listing:", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    if (type === "checkbox") {
+      setFormData((prevData) => ({
+        ...prevData,
+        amenities: {
+          ...prevData.amenities,
+          [name]: checked,
+        },
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
+
   return (
     <Layout>
       <PageBanner title={"Add Listing"} pageName={"Listing"} />
       <section className="fioxen-add-listing pt-120 pb-120">
         <div className="container">
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form onSubmit={handleSubmit}>
             <div className="row justify-content-center">
               <div className="col-lg-8">
                 <div className="add-listing-form general-listing-form mb-60 wow fadeInUp">
@@ -21,13 +77,20 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Place Name"
                           name="name"
-                          required=""
+                          value={formData.name}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
                     <div className="col-lg-6">
                       <div className="form_group">
-                        <select className="wide">
+                        <select
+                          className="wide"
+                          name="category"
+                          value={formData.category}
+                          onChange={handleChange}
+                        >
                           <option selected disabled value={"Category"}>
                             Category
                           </option>
@@ -49,7 +112,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Keywords"
                           name="keywords"
-                          required=""
+                          value={formData.keywords}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -58,7 +123,10 @@ const AddListing = () => {
                         <textarea
                           className="form_control"
                           placeholder="Description"
-                          name="discription"
+                          name="description"
+                          value={formData.description}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -74,7 +142,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Name"
                           name="name"
-                          required=""
+                          value={formData.contactName}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -85,7 +155,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Email"
                           name="email"
-                          required=""
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -96,7 +168,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Phone"
                           name="phone"
-                          required=""
+                          value={formData.phone}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -107,7 +181,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Website"
                           name="website"
-                          required=""
+                          value={formData.website}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -118,7 +194,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Designation"
                           name="name"
-                          required=""
+                          value={formData.designation}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -129,7 +207,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Company"
                           name="name"
-                          required=""
+                          value={formData.company}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -140,7 +220,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Facebook (Optional)"
                           name="website"
-                          required=""
+                          value={formData.facebook}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -151,7 +233,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Twitter (Optional)"
                           name="website"
-                          required=""
+                          value={formData.twitter}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -162,7 +246,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Linked (Optional)"
                           name="website"
-                          required=""
+                          value={formData.linkedIn}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -173,7 +259,9 @@ const AddListing = () => {
                           className="form_control"
                           placeholder="Skype (Optional)"
                           name="website"
-                          required=""
+                          value={formData.skype}
+                          onChange={handleChange}
+                          required
                         />
                       </div>
                     </div>
@@ -188,9 +276,11 @@ const AddListing = () => {
                         <input type="file" name="Image" />
                         <div className="upload-content">
                           <div className="upload-title-icon d-flex align-items-center justify-content-center">
-                            <img
-                              src="assets/images/elements/input-1.png"
+                            <Image
+                              src="/assets/images/elements/input-1.png"
                               alt="Image"
+                              width={100}
+                              height={100}
                             />
                           </div>
                         </div>
@@ -201,9 +291,11 @@ const AddListing = () => {
                         <input type="file" name="Image" />
                         <div className="upload-content">
                           <div className="upload-title-icon d-flex align-items-center justify-content-center">
-                            <img
-                              src="assets/images/elements/input-1.png"
+                            <Image
+                              src="/assets/images/elements/input-1.png"
                               alt="Image"
+                              width={100}
+                              height={100}
                             />
                           </div>
                         </div>
@@ -214,9 +306,11 @@ const AddListing = () => {
                         <input type="file" name="Image" />
                         <div className="upload-content">
                           <div className="upload-title-icon d-flex align-items-center justify-content-center">
-                            <img
-                              src="assets/images/elements/input-1.png"
+                            <Image
+                              src="/assets/images/elements/input-1.png"
                               alt="Image"
+                              width={100}
+                              height={100}
                             />
                           </div>
                         </div>
@@ -227,9 +321,11 @@ const AddListing = () => {
                         <input type="file" name="Video" />
                         <div className="upload-content">
                           <div className="upload-title-icon d-flex align-items-center justify-content-center">
-                            <img
-                              src="assets/images/elements/input-2.png"
+                            <Image
+                              src="/assets/images/elements/input-2.png"
                               alt="Image"
+                              width={100}
+                              height={100}
                             />
                             <span>Add Video +</span>
                           </div>
@@ -239,9 +335,11 @@ const AddListing = () => {
                         <input type="file" name="Image" />
                         <div className="upload-content">
                           <div className="upload-title-icon d-flex align-items-center justify-content-center">
-                            <img
-                              src="assets/images/elements/input-3.png"
+                            <Image
+                              src="/assets/images/elements/input-3.png"
                               alt="Image"
+                              width={100}
+                              height={100}
                             />
                             <span>Add Video +</span>
                           </div>
