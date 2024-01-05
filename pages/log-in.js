@@ -1,67 +1,133 @@
-import React, { useState } from 'react';
+import { useRef, useState, useEffect } from "react";
+import axios from "axios";
+
+const LOGIN_URL = "/api/auth/login";
 
 const Login = () => {
-  // State to manage login data
-  const [loginData, setLoginData] = useState({
-    email: '',
-    password: '',
-  });
+  const emailRef = useRef();
+  const pwdRef = useRef();
+  const errRef = useRef();
 
-  // Handle form input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setLoginData((prevData) => ({ ...prevData, [name]: value }));
-  };
+  const [email, setEmail] = useState("");
+  const [pwd, setPwd] = useState("");
+  const [validEmail, setValidEmail] = useState(false);
+  const [validPwd, setValidPwd] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  // Handle login submission
-  const handleLogin = async (e) => {
+  useEffect(() => {
+    emailRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    setValidEmail(EMAIL_REGEX.test(email));
+  }, [email]);
+
+  useEffect(() => {
+    setValidPwd(PWD_REGEX.test(pwd));
+  }, [pwd]);
+
+  useEffect(() => {
+    setErrMsg("");
+  }, [email, pwd]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Make a request to your login API endpoint
-    try {
-      const response = await fetch('api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData),
-      });
+    const isValidEmail = EMAIL_REGEX.test(email);
+    const isValidPwd = PWD_REGEX.test(pwd);
 
-      // Handle the response as needed
-      const data = await response.json();
-      console.log('Login response:', data);
-    } catch (error) {
-      console.error('Error during login:', error);
+    if (!isValidEmail || !isValidPwd) {
+      setErrMsg("Invalid Entry");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        LOGIN_URL,
+        JSON.stringify({ email, password: pwd }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      console.log(response?.data);
+      console.log(response?.accessToken);
+      console.log(JSON.stringify(response));
+
+      setSuccess(true);
+
+      setEmail("");
+      setPwd("");
+    } catch (err) {
+      if (!err?.response) {
+        setErrMsg("No Server Response");
+      } else if (err.response?.status === 401) {
+        setErrMsg("Invalid Email or Password");
+      } else {
+        setErrMsg("Login Failed");
+      }
+      errRef.current.focus();
     }
   };
 
   return (
-    <div>
-      <h1>Login Page</h1>
-      <form onSubmit={handleLogin}>
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={loginData.email}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
-        <label>
-          Password:
-          <input
-            type="password"
-            name="password"
-            value={loginData.password}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <>
+      {success ? (
+        <section>
+          <h1>Login Success!</h1>
+        </section>
+      ) : (
+        <section>
+          <p
+            ref={errRef}
+            className={errMsg ? "errmsg" : "offscreen"}
+            aria-live="assertive"
+          >
+            {errMsg}
+          </p>
+          <h1>Login</h1>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              ref={emailRef}
+              autoComplete="off"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              required
+              aria-invalid={validEmail ? "false" : "true"}
+              onFocus={() => setValidEmail(true)}
+              onBlur={() => setValidEmail(false)}
+            />
+
+            <label htmlFor="password">Password:</label>
+            <input
+              type="password"
+              id="password"
+              ref={pwdRef}
+              onChange={(e) => setPwd(e.target.value)}
+              value={pwd}
+              required
+              aria-invalid={validPwd ? "false" : "true"}
+              onFocus={() => setValidPwd(true)}
+              onBlur={() => setValidPwd(false)}
+            />
+
+            <button disabled={!validEmail || !validPwd}>Login</button>
+          </form>
+          <p>
+            New user?
+            <br />
+            <span className="line">
+              <a href="/register">Sign Up</a>
+            </span>
+          </p>
+        </section>
+      )}
+    </>
   );
 };
 

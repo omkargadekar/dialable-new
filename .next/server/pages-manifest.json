@@ -2,5 +2,9 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+<<<<<<< HEAD
   "/api/categories/get-categories": "pages/api/categories/get-categories.js"
+=======
+  "/": "pages/index.js"
+>>>>>>> cafc9888869aa6b1237ba47731307302de560e9d
 }

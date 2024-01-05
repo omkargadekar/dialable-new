@@ -9,12 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "axios": "^1.6.4",
+=======
+    "axios": "^1.6.3",
+>>>>>>> cafc9888869aa6b1237ba47731307302de560e9d
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cookies": "^0.8.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "font-awesome": "^4.7.0",
     "fs": "^0.0.1-security",
     "isotope-layout": "^3.0.6",
     "jsonwebtoken": "^9.0.2",
