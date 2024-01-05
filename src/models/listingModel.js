@@ -7,7 +7,7 @@ const listingSchema = new Schema(
       required: true,
     },
     category: {
-      type: [String],
+      type: Schema.Types.ObjectId,
       required: true,
     },
     keywords: {
@@ -59,4 +59,4 @@ const listingSchema = new Schema(
   }
 );
 
-export const Listing = mongoose.model.Listing || mongoose.model("Listing", listingSchema);
+export const Listing = mongoose.models.Listing || mongoose.model("Listing", listingSchema);

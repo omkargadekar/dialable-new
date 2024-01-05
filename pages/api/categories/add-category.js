@@ -1,8 +1,7 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-// import { Category } from "../../../src/models/categoryModel.js";
-import categoryModel from '../../../src/models/categoryModel'
+import { Category } from "../../../src/models/categoryModel.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -47,7 +46,7 @@ export default async function POST(req, res) {
         image = req.file.filename;
       }
 
-      const categoryData = new categoryModel({
+      const categoryData = new Category({
         name: name,
         image: image,
       });

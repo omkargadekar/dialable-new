@@ -2,17 +2,20 @@ import mongoose from "mongoose";
 require("dotenv").config();
 
 const connectDB = async () => {
-  try {
-    const connectionInstance = await mongoose.connect(
-      `${process.env.MONGO_URI}`
-    );
-    console.log(
-      `\n MongoDB connected !! DB HOST: ${connectionInstance.connection.host}`
-    );
-  } catch (error) {
-    console.log("MONGODB connection FAILED ", error);
-    process.exit(1);
-  }
+  const uri = process.env.MONGO_URI
+
+  mongoose
+    .connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then(() => {
+      console.log("Database Connected");
+    })
+    .catch((err) => {
+      console.log("could not connect to mongodb",err);
+    });
 };
+
 
 export default connectDB;

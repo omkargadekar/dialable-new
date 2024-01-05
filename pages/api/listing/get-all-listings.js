@@ -40,7 +40,7 @@ export default async function GET(req, res) {
       {
         $lookup: {
           from: "categories",
-          localField: "category",
+          localField: "Category",
           foreignField: "_id",
           as: "categories",
         },

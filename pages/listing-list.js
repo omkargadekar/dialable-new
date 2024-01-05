@@ -13,7 +13,7 @@ const RangeSlider = dynamic(() => import("../src/components/RangeSlider"), {
 const ListingList = () => {
   const [listing , setListing] = useState([])
   useEffect(()=>{
-    const response = axios.get('/api/listing/get-all-listings')
+    axios.get('/api/listing/get-all-listings')
     .then((res)=>{
       setListing(res.data.data)
     })
