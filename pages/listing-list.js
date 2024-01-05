@@ -1,15 +1,26 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PageBanner from "../src/components/PageBanner";
 // import RangeSlider from "../src/components/RangeSlider";
 import Layout from "../src/layouts/Layout";
+import axios from "axios";
 
 const RangeSlider = dynamic(() => import("../src/components/RangeSlider"), {
   ssr: false,
 });
 
 const ListingList = () => {
+  const [listing , setListing] = useState([])
+  useEffect(()=>{
+    const response = axios.get('/api/listing/get-all-listings')
+    .then((res)=>{
+      setListing(res.data.data)
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+  })
   return (
     <Layout>
       <PageBanner title={"List Layout"} />
@@ -181,7 +192,9 @@ const ListingList = () => {
                 </div>
               </div>
               <div className="listing-list-wrapper">
-                <div className="listing-item listing-list-item-two mb-60 wow fadeInUp">
+                {listing.map((elem , ind) =>(
+
+                <div className="listing-item listing-list-item-two mb-60 wow fadeInUp" key={ind}>
                   <div className="listing-thumbnail">
                     <img
                       src="assets/images/listing/listing-list-5.jpg"
@@ -193,7 +206,7 @@ const ListingList = () => {
                           <i className="flaticon-government" />
                         </div>
                         <div className="title">
-                          <h6>Art Gallery</h6>
+                          <h6>{elem.placeName}</h6>
                         </div>
                       </div>
                       <span className="status st-open">Open</span>
@@ -202,7 +215,7 @@ const ListingList = () => {
                   <div className="listing-content">
                     <h3 className="title">
                       <Link href="/listing-details-1">
-                        <a>National Art</a>
+                        <a>{elem.placeName}</a>
                       </Link>
                     </h3>
                     <div className="ratings">
@@ -252,7 +265,8 @@ const ListingList = () => {
                     </div>
                   </div>
                 </div>
-                <div className="listing-item listing-list-item-two mb-60 wow fadeInUp">
+                ))}
+                {/* <div className="listing-item listing-list-item-two mb-60 wow fadeInUp">
                   <div className="listing-thumbnail">
                     <img
                       src="assets/images/listing/listing-list-6.jpg"
@@ -606,7 +620,7 @@ const ListingList = () => {
                       </ul>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

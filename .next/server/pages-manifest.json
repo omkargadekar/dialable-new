@@ -2,5 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/auth/login": "pages/api/auth/login.js"
+  "/api/listing/add-listing": "pages/api/listing/add-listing.js"
 }
